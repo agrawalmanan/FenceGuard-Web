@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IoT Motor Monitor | Wildlife Fence Protection</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="logo-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <div class="brand-text">
+                <h1>FenceGuard</h1>
+                <span>IoT Motor Monitoring System</span>
+            </div>
+        </div>
+        <div class="nav-links">
+            <a href="#dashboard" class="nav-link active" data-section="dashboard">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <a href="#analytics" class="nav-link" data-section="analytics">
+                <i class="fas fa-chart-line"></i> Analytics
+            </a>
+            <a href="#algebra" class="nav-link" data-section="algebra">
+                <i class="fas fa-square-root-variable"></i> Math Model
+            </a>
+            <a href="#settings" class="nav-link" data-section="settings">
+                <i class="fas fa-cog"></i> Settings
+            </a>
+        </div>
+        <div class="nav-status">
+            <div class="fence-status" id="fenceStatus">
+                <div class="status-dot active"></div>
+                <span>Fence: ACTIVE</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ALERT BANNER -->
+    <div class="alert-banner" id="alertBanner">
+        <div class="alert-content">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span id="alertMessage">System running normally</span>
+            <button class="alert-dismiss" onclick="dismissAlert()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <!-- ==================== DASHBOARD SECTION ==================== -->
+        <section id="dashboard" class="section active">
+
+            <!-- System Overview Cards -->
+            <div class="overview-strip">
+                <div class="overview-card">
+                    <div class="ov-icon blue"><i class="fas fa-bolt"></i></div>
+                    <div class="ov-info">
+                        <span class="ov-label">Fence Voltage</span>
+                        <span class="ov-value" id="fenceVoltage">5000V</span>
+                    </div>
+                </div>
+                <div class="overview-card">
+                    <div class="ov-icon green"><i class="fas fa-clock"></i></div>
+                    <div class="ov-info">
+                        <span class="ov-label">System Uptime</span>
+                        <span class="ov-value" id="systemUptime">00:00:00</span>
+                    </div>
+                </div>
+                <div class="overview-card">
+                    <div class="ov-icon orange"><i class="fas fa-exchange-alt"></i></div>
+                    <div class="ov-info">
+                        <span class="ov-label">Switchovers</span>
+                        <span class="ov-value" id="switchoverCount">0</span>
+                    </div>
+                </div>
+                <div class="overview-card">
+                    <div class="ov-icon purple"><i class="fas fa-paw"></i></div>
+                    <div class="ov-info">
+                        <span class="ov-label">Threats Detected</span>
+                        <span class="ov-value" id="threatCount">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Motor Cards -->
+            <div class="motors-container">
+
+                <!-- MOTOR 1 -->
+                <div class="motor-card" id="motor1Card">
+                    <div class="motor-header">
+                        <div class="motor-title">
+                            <div class="motor-icon-wrapper" id="motor1IconWrapper">
+                                <i class="fas fa-cog motor-gear" id="motor1Gear"></i>
+                            </div>
+                            <div>
+                                <h2>DC Motor 1</h2>
+                                <span class="motor-role" id="motor1Role">PRIMARY</span>
+                            </div>
+                        </div>
+                        <div class="motor-status" id="motor1Status">
+                            <div class="status-indicator running"></div>
+                            <span>RUNNING</span>
+                        </div>
+                    </div>
+
+                    <div class="motor-body">
+                        <!-- Temperature Display -->
+                        <div class="temp-display">
+                            <div class="temp-circle" id="motor1TempCircle">
+                                <svg viewBox="0 0 120 120" class="temp-ring">
+                                    <circle cx="60" cy="60" r="54" class="ring-bg"/>
+                                    <circle cx="60" cy="60" r="54" class="ring-fill" id="motor1Ring"/>
+                                </svg>
+                                <div class="temp-value">
+                                    <span class="temp-number" id="motor1Temp">25</span>
+                                    <span class="temp-unit">°C</span>
+                                </div>
+                            </div>
+                            <div class="temp-details">
+                                <div class="temp-detail-row">
+                                    <span>Min Recorded</span>
+                                    <span id="motor1Min">25°C</span>
+                                </div>
+                                <div class="temp-detail-row">
+                                    <span>Max Recorded</span>
+                                    <span id="motor1Max">25°C</span>
+                                </div>
+                                <div class="temp-detail-row">
+                                    <span>Average</span>
+                                    <span id="motor1Avg">25°C</span>
+                                </div>
+                                <div class="temp-detail-row">
+                                    <span>Rate of Change</span>
+                                    <span id="motor1Rate">0°C/min</span>
+                                </div>
+                                <div class="temp-detail-row">
+                                    <span>Est. Time to Threshold</span>
+                                    <span id="motor1ETA">N/A</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Temperature Bar -->
+                        <div class="temp-bar-container">
+                            <div class="temp-bar">
+                                <div class="temp-bar-fill" id="motor1Bar"></div>
+                                <div class="temp-bar-threshold" id="motor1Threshold"></div>
+                            </div>
+                            <div class="temp-bar-labels">
+                                <span>0°C</span>
+                                <span class="threshold-label">Threshold: <span id="motor1ThreshLabel">75</span>°C</span>
+                                <span>120°C</span>
+                            </div>
+                        </div>
+
+                        <!-- Motor Metrics -->
+                        <div class="motor-metrics">
+                            <div class="metric">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span class="metric-value" id="motor1RPM">0</span>
+                                <span class="metric-label">RPM</span>
+                            </div>
+                            <div class="metric">
+                                <i class="fas fa-bolt"></i>
+                                <span class="metric-value" id="motor1Current">0</span>
+                                <span class="metric-label">Amps</span>
+                            </div>
+                            <div class="metric">
+                                <i class="fas fa-fire"></i>
+                                <span class="metric-value" id="motor1Power">0</span>
+                                <span class="metric-label">Watts</span>
+                            </div>
+                            <div class="metric">
+                                <i class="fas fa-history"></i>
+                                <span class="metric-value" id="motor1Runtime">0m</span>
+                                <span class="metric-label">Runtime</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="motor-controls">
+                        <button class="btn btn-start" id="motor1StartBtn" onclick="manualControl(1, 'start')">
+                            <i class="fas fa-play"></i> Start
+                        </button>
+                        <button class="btn btn-stop" id="motor1StopBtn" onclick="manualControl(1, 'stop')">
+                            <i class="fas fa-stop"></i> Stop
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SWITCHOVER INDICATOR -->
+                <div class="switchover-indicator" id="switchoverIndicator">
+                    <div class="switch-arrow" id="switchArrow">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <div class="switch-info">
+                        <span>AUTO FAILOVER</span>
+                        <span class="switch-mode" id="switchMode">Monitoring</span>
+                    </div>
+                </div>
+
+                <!-- MOTOR 2 -->
+                <div class="motor-card standby" id="motor2Card">
+                    <div class="motor-header">
+                        <div class="motor-title">
+                            <div class="motor-icon-wrapper standby" id="motor2IconWrapper">
+                                <i class="fas fa-cog motor-gear" id="motor2Gear"></i>
+                            </div>
+                            <div>
+                                <h2>DC Motor 2</h2>
+                                <span class="motor-role" id="motor2Role">BACKUP</span>
+                            </div>
+                        </div>
+                        <div class="motor-status standby" id="motor2Status">
+                            <div class="status-indicator standby"></div>
+                            <span>STANDBY</span>
+                        </div>
+                    </div>
+
+                    <div class="motor-body">
+                        <div class="temp-display">
+                            <div class="temp-circle" id="motor2TempCircle">
+                                <svg viewBox="0 0 120 120" class="temp-ring">
+                                    <circle cx="60" cy="60" r="54" class="ring-bg"/>
+                                    <circle cx="60" cy="60" r="54" class="ring-fill" id="motor2Ring"/>
+                                </svg>
+                                <div class="temp-value">
+                                    <span class="temp-number" id="motor2Temp">25</span>
+                                    <span class="temp-unit">°C</span>
+                                </div>
+                            </div>
+                            <div class="temp-details">
+                                <div class="temp-detail-row">
+                                    <span>Min Recorded</span>
+                                    <span id="motor2Min">25°C</span>
+                                </div>
+                                <div class="temp-detail-row">
+                                    <span>Max Recorded</span>
+                                    <span id="motor2Max">25°C</span>
+                                </div>
+                                <div class="temp-detail-row">
+                                    <span>Average</span>
+                                    <span id="motor2Avg">25°C</span>
+                                </div>
+                                <div class="temp-detail-row">
+                                    <span>Rate of Change</span>
+                                    <span id="motor2Rate">0°C/min</span>
+                                </div>
+                                <div class="temp-detail-row">
+                                    <span>Est. Time to Threshold</span>
+                                    <span id="motor2ETA">N/A</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="temp-bar-container">
+                            <div class="temp-bar">
+                                <div class="temp-bar-fill" id="motor2Bar"></div>
+                                <div class="temp-bar-threshold" id="motor2Threshold"></div>
+                            </div>
+                            <div class="temp-bar-labels">
+                                <span>0°C</span>
+                                <span class="threshold-label">Threshold: <span id="motor2ThreshLabel">75</span>°C</span>
+                                <span>120°C</span>
+                            </div>
+                        </div>
+
+                        <div class="motor-metrics">
+                            <div class="metric">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span class="metric-value" id="motor2RPM">0</span>
+                                <span class="metric-label">RPM</span>
+                            </div>
+                            <div class="metric">
+                                <i class="fas fa-bolt"></i>
+                                <span class="metric-value" id="motor2Current">0</span>
+                                <span class="metric-label">Amps</span>
+                            </div>
+                            <div class="metric">
+                                <i class="fas fa-fire"></i>
+                                <span class="metric-value" id="motor2Power">0</span>
+                                <span class="metric-label">Watts</span>
+                            </div>
+                            <div class="metric">
+                                <i class="fas fa-history"></i>
+                                <span class="metric-value" id="motor2Runtime">0m</span>
+                                <span class="metric-label">Runtime</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="motor-controls">
+                        <button class="btn btn-start" id="motor2StartBtn" onclick="manualControl(2, 'start')">
+                            <i class="fas fa-play"></i> Start
+                        </button>
+                        <button class="btn btn-stop" id="motor2StopBtn" onclick="manualControl(2, 'stop')">
+                            <i class="fas fa-stop"></i> Stop
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Temperature Graphs -->
+            <div class="graphs-container">
+                <div class="graph-card">
+                    <div class="graph-header">
+                        <h3><i class="fas fa-chart-area"></i> Real-Time Temperature - Motor 1</h3>
+                        <div class="graph-controls">
+                            <button class="graph-btn active" onclick="setTimeRange(1, 60)">1m</button>
+                            <button class="graph-btn" onclick="setTimeRange(1, 300)">5m</button>
+                            <button class="graph-btn" onclick="setTimeRange(1, 600)">10m</button>
+                        </div>
+                    </div>
+                    <canvas id="motor1Chart"></canvas>
+                </div>
+                <div class="graph-card">
+                    <div class="graph-header">
+                        <h3><i class="fas fa-chart-area"></i> Real-Time Temperature - Motor 2</h3>
+                        <div class="graph-controls">
+                            <button class="graph-btn active" onclick="setTimeRange(2, 60)">1m</button>
+                            <button class="graph-btn" onclick="setTimeRange(2, 300)">5m</button>
+                            <button class="graph-btn" onclick="setTimeRange(2, 600)">10m</button>
+                        </div>
+                    </div>
+                    <canvas id="motor2Chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Combined Graph -->
+            <div class="graph-card full-width">
+                <div class="graph-header">
+                    <h3><i class="fas fa-chart-line"></i> Combined Temperature Comparison</h3>
+                </div>
+                <canvas id="combinedChart"></canvas>
+            </div>
+
+            <!-- Event Log -->
+            <div class="log-card">
+                <div class="log-header">
+                    <h3><i class="fas fa-list-alt"></i> Event Log</h3>
+                    <button class="btn btn-small" onclick="clearLog()">
+                        <i class="fas fa-trash"></i> Clear
+                    </button>
+                </div>
+                <div class="log-body" id="eventLog">
+                    <div class="log-entry info">
+                        <span class="log-time">--:--:--</span>
+                        <span class="log-msg">System initialized. Waiting for start...</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== ANALYTICS SECTION ==================== -->
+        <section id="analytics" class="section">
+            <h2 class="section-title"><i class="fas fa-chart-bar"></i> Analytics & Statistics</h2>
+            <div class="analytics-grid">
+                <div class="analytics-card">
+                    <h3>Temperature Distribution</h3>
+                    <canvas id="distributionChart"></canvas>
+                </div>
+                <div class="analytics-card">
+                    <h3>Motor Efficiency Over Time</h3>
+                    <canvas id="efficiencyChart"></canvas>
+                </div>
+                <div class="analytics-card">
+                    <h3>Switchover History</h3>
+                    <div id="switchoverHistory" class="history-list"></div>
+                </div>
+                <div class="analytics-card">
+                    <h3>System Health Score</h3>
+                    <div class="health-score" id="healthScore">
+                        <div class="score-circle">
+                            <span class="score-value">100</span>
+                            <span class="score-label">/ 100</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== MATH MODEL SECTION ==================== -->
+        <section id="algebra" class="section">
+            <h2 class="section-title"><i class="fas fa-square-root-variable"></i> Mathematical Model</h2>
+
+            <div class="math-grid">
+                <!-- Newton's Law of Cooling -->
+                <div class="math-card">
+                    <h3>🌡️ Newton's Law of Cooling (Linear Algebra Application)</h3>
+                    <div class="formula-box">
+                        <p class="formula">T(t) = T<sub>env</sub> + (T<sub>0</sub> - T<sub>env</sub>) × e<sup>-kt</sup></p>
+                        <p class="formula-desc">
+                            Where: T(t) = Temperature at time t, T<sub>env</sub> = Ambient temp,
+                            T<sub>0</sub> = Initial temp, k = cooling constant
+                        </p>
+                    </div>
+                    <div class="math-interactive">
+                        <div class="math-inputs">
+                            <label>T₀ (Initial): <input type="number" id="mathT0" value="90"> °C</label>
+                            <label>T_env (Ambient): <input type="number" id="mathTenv" value="25"> °C</label>
+                            <label>k (Cooling constant): <input type="number" id="mathK" value="0.05" step="0.01"></label>
+                        </div>
+                        <button class="btn btn-primary" onclick="plotCoolingCurve()">
+                            <i class="fas fa-calculator"></i> Calculate & Plot
+                        </button>
+                        <canvas id="coolingChart"></canvas>
+                        <div id="coolingResults" class="math-results"></div>
+                    </div>
+                </div>
+
+                <!-- Linear Regression for Prediction -->
+                <div class="math-card">
+                    <h3>📈 Linear Regression - Temperature Prediction (Algebra)</h3>
+                    <div class="formula-box">
+                        <p class="formula">T̂ = β₀ + β₁t</p>
+                        <p class="formula-desc">
+                            Least Squares: β₁ = Σ(xᵢ - x̄)(yᵢ - ȳ) / Σ(xᵢ - x̄)²
+                            <br>β₀ = ȳ - β₁x̄
+                        </p>
+                    </div>
+                    <div class="math-interactive">
+                        <p>Using live temperature data to predict when threshold will be reached.</p>
+                        <canvas id="regressionChart"></canvas>
+                        <div id="regressionResults" class="math-results"></div>
+                    </div>
+                </div>
+
+                <!-- Matrix Operations -->
+                <div class="math-card">
+                    <h3>🔢 Matrix Representation - System State (Linear Algebra)</h3>
+                    <div class="formula-box">
+                        <p class="formula">
+                            State Vector: S = [T₁, T₂, RPM₁, RPM₂, I₁, I₂]ᵀ
+                        </p>
+                        <p class="formula-desc">
+                            Transition Matrix maps current state to next state:
+                            S(t+1) = A × S(t) + B × u(t)
+                        </p>
+                    </div>
+                    <div class="math-interactive">
+                        <div class="matrix-display" id="stateMatrix"></div>
+                        <button class="btn btn-primary" onclick="updateStateMatrix()">
+                            <i class="fas fa-sync"></i> Update State
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Threshold Algebra -->
+                <div class="math-card">
+                    <h3>⚡ Threshold Analysis (Algebraic Inequalities)</h3>
+                    <div class="formula-box">
+                        <p class="formula">
+                            Motor switches when: T(t) ≥ T<sub>threshold</sub>
+                            <br>Time to threshold: t* = (T<sub>threshold</sub> - T<sub>current</sub>) / rate
+                        </p>
+                    </div>
+                    <div class="math-interactive">
+                        <div id="thresholdAnalysis" class="threshold-viz"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== SETTINGS SECTION ==================== -->
+        <section id="settings" class="section">
+            <h2 class="section-title"><i class="fas fa-cog"></i> System Settings</h2>
+            <div class="settings-grid">
+                <div class="settings-card">
+                    <h3>Temperature Thresholds</h3>
+                    <div class="setting-row">
+                        <label>Warning Threshold (°C)</label>
+                        <input type="range" id="warningThreshold" min="40" max="90" value="60"
+                               oninput="updateSetting('warning', this.value)">
+                        <span id="warningValue">60°C</span>
+                    </div>
+                    <div class="setting-row">
+                        <label>Critical Threshold (°C)</label>
+                        <input type="range" id="criticalThreshold" min="50" max="100" value="75"
+                               oninput="updateSetting('critical', this.value)">
+                        <span id="criticalValue">75°C</span>
+                    </div>
+                    <div class="setting-row">
+                        <label>Cooldown Target (°C)</label>
+                        <input type="range" id="cooldownTarget" min="20" max="50" value="35"
+                               oninput="updateSetting('cooldown', this.value)">
+                        <span id="cooldownValue">35°C</span>
+                    </div>
+                </div>
+                <div class="settings-card">
+                    <h3>Simulation Speed</h3>
+                    <div class="setting-row">
+                        <label>Update Interval (ms)</label>
+                        <input type="range" id="updateInterval" min="200" max="3000" value="1000"
+                               oninput="updateSetting('interval', this.value)">
+                        <span id="intervalValue">1000ms</span>
+                    </div>
+                    <div class="setting-row">
+                        <label>Heating Rate Multiplier</label>
+                        <input type="range" id="heatingRate" min="1" max="10" value="3"
+                               oninput="updateSetting('heating', this.value)">
+                        <span id="heatingValue">3x</span>
+                    </div>
+                    <div class="setting-row">
+                        <label>Cooling Rate Multiplier</label>
+                        <input type="range" id="coolingRate" min="1" max="10" value="2"
+                               oninput="updateSetting('cooling', this.value)">
+                        <span id="coolingValue">2x</span>
+                    </div>
+                </div>
+                <div class="settings-card">
+                    <h3>Motor Parameters</h3>
+                    <div class="setting-row">
+                        <label>Max RPM</label>
+                        <input type="number" id="maxRPM" value="3000">
+                    </div>
+                    <div class="setting-row">
+                        <label>Rated Current (A)</label>
+                        <input type="number" id="ratedCurrent" value="5" step="0.5">
+                    </div>
+                    <div class="setting-row">
+                        <label>Rated Voltage (V)</label>
+                        <input type="number" id="ratedVoltage" value="24">
+                    </div>
+                </div>
+                <div class="settings-card">
+                    <h3>System Controls</h3>
+                    <button class="btn btn-primary full-width" onclick="startSystem()">
+                        <i class="fas fa-play"></i> Start Simulation
+                    </button>
+                    <button class="btn btn-stop full-width" onclick="stopSystem()">
+                        <i class="fas fa-stop"></i> Stop Simulation
+                    </button>
+                    <button class="btn btn-warning full-width" onclick="resetSystem()">
+                        <i class="fas fa-redo"></i> Reset System
+                    </button>
+                    <button class="btn btn-export full-width" onclick="exportData()">
+                        <i class="fas fa-download"></i> Export Data (CSV)
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- SCRIPTS -->
+    <script src="js/dataStructures.js"></script>
+    <script src="js/algebraEngine.js"></script>
+    <script src="js/temperatureSimulator.js"></script>
+    <script src="js/graphRenderer.js"></script>
+    <script src="js/motorController.js"></script>
+    <script src="js/apiService.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
