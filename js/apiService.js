@@ -3,8 +3,8 @@
 // ============================================================
 
 const ApiService = {
-    BASE_URL: 'http://192.168.56.1:3000/api',
-    WS_URL:   'ws://192.168.56.1:3000',
+    BASE_URL: 'https://fenceguard-backend.onrender.com/api',
+    WS_URL:   'wss://fenceguard-backend.onrender.com',
     ws:       null,
     onMessage: null,
 
